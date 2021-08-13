@@ -11,7 +11,6 @@ adicionar_tiro = Tiro(janela)
 jogo = Jogar(janela, adicionar_tiro)
 
 while True:
-    print("loop works")
     janela.set_background_color([0, 0, 0])
     if global_information.ChangeScene:
         global_information.ChangeScene = False

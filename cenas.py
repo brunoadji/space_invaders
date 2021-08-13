@@ -126,5 +126,5 @@ class Jogar():
 
         if self.keyboard.key_pressed("ESC"):
             global_information.Scene = 1
-        
+
         self.tiro.update()

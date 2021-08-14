@@ -1,4 +1,5 @@
 from PPlay.sprite import *
+import global_information
 class Tiro():
     def __init__(self, janela):
         self.janela = janela
@@ -13,27 +14,41 @@ class Tiro():
         for i in range(len(self.tiros)):
             self.tiros[i].draw()
 
-    def update(self):
+    def update(self, monsters):
         variacao = 0
-        for i in range(len(self.tiros)):
-            self.tiros[i-variacao].y = self.tiros[i-variacao].y - 300 * self.janela.delta_time()
-            if self.tiros[i-variacao].y <= -self.tiros[i-variacao].height:
-                self.tiros.pop(i-variacao)
+        for shot in self.tiros:
+            shotted = False
+            shot.y = shot.y - 300 * self.janela.delta_time()
+            
+            if shot.y <= 0 - shot.height:
+                self.tiros.remove(shot)
                 variacao += 1
+            if shot.y <= monsters[-1][-1].y + monsters[-1][-1].height:
+                for m in range(len(monsters)):
+                    if shotted:
+                        break
+                    for monster in monsters[m]:
+                        if shot.collided(monster):
+                            monsters[m].remove(monster)
+                            self.tiros.remove(shot)
+                            variacao += 1
+                            if len(monsters[m]) == 0:
+                                monsters.pop(m)
+                            shotted = True
+
         self.draw_shots()
 
 class Monstro():
     def __init__(self, janela):
         self.janela = janela
         self.monsters = []
-        self.row = 3
-        self.column = 5
+        self.row = 5
+        self.column = 7
         self.speed_x = 100
         self.countDown = 0
         self.next_side = "right"
         self.create_monsters()
         self.down = False
-
     
     def create_monsters(self):
         height = 10
@@ -52,19 +67,19 @@ class Monstro():
             self.monsters.append(tmp2)
     
     def draw_monsters(self):
-        for i in range(self.row):
-            for j in range(self.column):
+        for i in range(len(self.monsters)):
+            for j in range(len(self.monsters[i])):
                 self.monsters[i][j].draw()
     
     def down_monsters(self):
-        if self.countDown >= 50:
+        if self.countDown >= 60:
             self.countDown = 0
             self.down = False
         else:
-            for i in range(self.row):
-                for j in range(self.column):
-                    self.monsters[i][j].y += 50 * self.janela.delta_time()
-            self.countDown += 50 * self.janela.delta_time()
+            for i in range(len(self.monsters)):
+                for j in range(len(self.monsters[i])):
+                    self.monsters[i][j].y += 60 * self.janela.delta_time()
+            self.countDown += 60 * self.janela.delta_time()
     
     # def align_monster_right(self):
     #     for i in range(self.row):
@@ -82,12 +97,12 @@ class Monstro():
     #             else:
     #                 self.monsters[i][j].x = self.monsters[i][j-1].x + self.monsters[i][j].width + self.monsters[i][j].width/2
     
-    def run(self):
+    def run(self, ship):
         self.draw_monsters()
         max_side_left = False
         max_side_right = False
-        for i in range(self.row):
-            for j in range(self.column):
+        for i in range(len(self.monsters)):
+            for j in range(len(self.monsters[i])):
                 self.monsters[i][j].x += self.speed_x * self.janela.delta_time()
                 if self.monsters[i][j].x <= 0 and self.next_side == "left":
                     self.next_side = "right"
@@ -109,3 +124,6 @@ class Monstro():
             
         if self.down:
             self.down_monsters()
+
+        if self.monsters[-1][0].y + self.monsters[-1][0].height >= ship.y:
+            global_information.Loss = True

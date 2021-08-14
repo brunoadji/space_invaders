@@ -22,7 +22,7 @@ while True:
     if global_information.Scene == 3:
         pass
     if global_information.Scene == 4:
-        jogo.select(janela)
+        jogo.select()
     if global_information.Scene == 5:
         exit()
         

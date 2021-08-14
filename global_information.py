@@ -10,5 +10,7 @@ CoolDown = False
 TimeCoolDown = 0.5
 Tempo = 0
 
+Loss = False
+
 #easy = 1, medium = 2, hard = 3
 Difficulty = 2

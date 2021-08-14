@@ -118,6 +118,7 @@ class Jogar():
             self.tempo = 0
         
         self.janela.draw_text(str(self.fps), 10, 10, 24, (255, 255, 255), "Arial")
+        self.janela.draw_text(str(global_information.Pontos), self.janela.width/2, 10, 24, (0, 0, 255), "Arial")
         
         if global_information.CoolDown:
             if global_information.Tempo >= global_information.TimeCoolDown:
@@ -140,7 +141,12 @@ class Jogar():
         if self.keyboard.key_pressed("ESC"):
             global_information.Scene = 1
         
+        if global_information.Win:
+            global_information.Pontos = 0
+            global_information.Scene = 1
+        
         if global_information.Loss:
+            global_information.Pontos = 0
             global_information.Scene = 1
 
         self.tiro.update(self.monstro.monsters)

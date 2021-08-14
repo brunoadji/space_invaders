@@ -35,6 +35,7 @@ class Tiro():
                             if len(monsters[m]) == 0:
                                 monsters.pop(m)
                             shotted = True
+                            global_information.Pontos += 100
 
         self.draw_shots()
 
@@ -98,32 +99,35 @@ class Monstro():
     #                 self.monsters[i][j].x = self.monsters[i][j-1].x + self.monsters[i][j].width + self.monsters[i][j].width/2
     
     def run(self, ship):
-        self.draw_monsters()
-        max_side_left = False
-        max_side_right = False
-        for i in range(len(self.monsters)):
-            for j in range(len(self.monsters[i])):
-                self.monsters[i][j].x += self.speed_x * self.janela.delta_time()
-                if self.monsters[i][j].x <= 0 and self.next_side == "left":
-                    self.next_side = "right"
-                    max_side_left = True
-                if self.monsters[i][j].x >= self.janela.width - self.monsters[i][j].width and self.next_side == "right":
-                    self.next_side = "left"
-                    max_side_right = True
-        if max_side_left:
-            self.speed_x = self.speed_x * -1
+        if len(self.monsters) == 0:
+            global_information.Win = True
+        else:
+            self.draw_monsters()
             max_side_left = False
-            self.down = True
-            # self.align_monster_left()
-            
-        if max_side_right:
-            self.speed_x = self.speed_x * -1
             max_side_right = False
-            self.down = True
-            # self.align_monster_right()
-            
-        if self.down:
-            self.down_monsters()
+            for i in range(len(self.monsters)):
+                for j in range(len(self.monsters[i])):
+                    self.monsters[i][j].x += self.speed_x * self.janela.delta_time()
+                    if self.monsters[i][j].x <= 0 and self.next_side == "left":
+                        self.next_side = "right"
+                        max_side_left = True
+                    if self.monsters[i][j].x >= self.janela.width - self.monsters[i][j].width and self.next_side == "right":
+                        self.next_side = "left"
+                        max_side_right = True
+            if max_side_left:
+                self.speed_x = self.speed_x * -1
+                max_side_left = False
+                self.down = True
+                # self.align_monster_left()
+                
+            if max_side_right:
+                self.speed_x = self.speed_x * -1
+                max_side_right = False
+                self.down = True
+                # self.align_monster_right()
+                
+            if self.down:
+                self.down_monsters()
 
-        if self.monsters[-1][0].y + self.monsters[-1][0].height >= ship.y:
-            global_information.Loss = True
+            if self.monsters[-1][0].y + self.monsters[-1][0].height >= ship.y:
+                global_information.Loss = True

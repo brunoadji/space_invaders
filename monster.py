@@ -1,48 +1,16 @@
 from PPlay.sprite import *
 import global_information
-class Tiro():
-    def __init__(self, janela):
-        self.janela = janela
-        self.tiros = []
-
-    def add_shot(self, nave):
-        tiro = Sprite("imagens/tiro.jpg")
-        tiro.set_position(nave.x + nave.width/2, nave.y - tiro.height)
-        self.tiros.append(tiro)
-    
-    def draw_shots(self):
-        for i in range(len(self.tiros)):
-            self.tiros[i].draw()
-
-    def update(self, monsters):
-        variacao = 0
-        for shot in self.tiros:
-            shotted = False
-            shot.y = shot.y - 300 * self.janela.delta_time()
-            
-            if shot.y <= 0 - shot.height:
-                self.tiros.remove(shot)
-                variacao += 1
-            if shot.y <= monsters[-1][-1].y + monsters[-1][-1].height:
-                for m in range(len(monsters)):
-                    if shotted:
-                        break
-                    for monster in monsters[m]:
-                        if shot.collided(monster):
-                            monsters[m].remove(monster)
-                            self.tiros.remove(shot)
-                            variacao += 1
-                            if len(monsters[m]) == 0:
-                                monsters.pop(m)
-                            shotted = True
-                            global_information.Pontos += 100
-
-        self.draw_shots()
+import random
 
 class Monstro():
-    def __init__(self, janela):
+    def __init__(self, janela, ship):
+        self.time = 0
+        self.cooldown = False
+        self.timecooldown = 2
+        self.ship = ship
         self.janela = janela
         self.monsters = []
+        self.shots = []
         self.row = 5
         self.column = 7
         self.speed_x = 100
@@ -66,12 +34,12 @@ class Monstro():
                 tmp2.append(monster)
             height += 60
             self.monsters.append(tmp2)
-    
+
     def draw_monsters(self):
         for i in range(len(self.monsters)):
             for j in range(len(self.monsters[i])):
                 self.monsters[i][j].draw()
-    
+
     def down_monsters(self):
         if self.countDown >= 60:
             self.countDown = 0
@@ -81,30 +49,54 @@ class Monstro():
                 for j in range(len(self.monsters[i])):
                     self.monsters[i][j].y += 60 * self.janela.delta_time()
             self.countDown += 60 * self.janela.delta_time()
-    
-    # def align_monster_right(self):
-    #     for i in range(self.row):
-    #         for j in range(self.column-1, -1, -1):
-    #             if j == self.column-1:
-    #                 self.monsters[i][j].x = self.janela.width - self.monsters[i][j].width
-    #             else:
-    #                 self.monsters[i][j].x = self.monsters[i][j+1].x - self.monsters[i][j].width - self.monsters[i][j].width/2
-    
-    # def align_monster_left(self):
-    #     for i in range(self.row):
-    #         for j in range(self.column):
-    #             if j == 0:
-    #                 self.monsters[i][j].x = 0
-    #             else:
-    #                 self.monsters[i][j].x = self.monsters[i][j-1].x + self.monsters[i][j].width + self.monsters[i][j].width/2
-    
-    def run(self, ship):
+
+    def add_shot(self, monster):
+        pass
+        tiro = Sprite("imagens/tiro.jpg")
+        tiro.x = monster.x + monster.width/2
+        tiro.y = monster.y + monster.height - tiro.height
+        self.shots.append(tiro)
+
+    def update_shots(self):
+        for shot in self.shots:
+            shot.y += 300 * self.janela.delta_time()
+            if shot.y + shot.height >= self.ship.y:
+                if shot.x + shot.width > self.ship.x and self.ship.x + self.ship.width > shot.x:
+                    global_information.LossLife = True
+                    self.shots.remove(shot)
+                if shot.y >= self.janela.height:
+                    self.shots.remove(shot)
+
+    def draw_shots(self):
+        for shot in self.shots:
+            shot.draw()
+
+    def run(self):
         if len(self.monsters) == 0:
             global_information.Win = True
         else:
             self.draw_monsters()
+            self.draw_shots()
+            self.update_shots()
+            
             max_side_left = False
             max_side_right = False
+            
+            if self.cooldown:
+                if self.time >= self.timecooldown:
+                    self.cooldown = False
+                    self.time = 0
+                else:
+                    self.time += self.janela.delta_time()
+
+            for i in range(len(self.monsters)):
+                for m in self.monsters[i]:
+                    if not self.cooldown:
+                        #10% de chance de gerar o tiro
+                        if random.randint(0, 9) == 1:
+                            self.cooldown = True
+                            self.add_shot(m)
+
             for i in range(len(self.monsters)):
                 for j in range(len(self.monsters[i])):
                     self.monsters[i][j].x += self.speed_x * self.janela.delta_time()
@@ -114,20 +106,19 @@ class Monstro():
                     if self.monsters[i][j].x >= self.janela.width - self.monsters[i][j].width and self.next_side == "right":
                         self.next_side = "left"
                         max_side_right = True
+
             if max_side_left:
                 self.speed_x = self.speed_x * -1
                 max_side_left = False
                 self.down = True
-                # self.align_monster_left()
                 
             if max_side_right:
                 self.speed_x = self.speed_x * -1
                 max_side_right = False
                 self.down = True
-                # self.align_monster_right()
-                
+            
             if self.down:
                 self.down_monsters()
 
-            if self.monsters[-1][0].y + self.monsters[-1][0].height >= ship.y:
+            if self.monsters[-1][0].y + self.monsters[-1][0].height >= self.ship.y:
                 global_information.Loss = True

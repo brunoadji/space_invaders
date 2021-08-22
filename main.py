@@ -1,6 +1,7 @@
 from PPlay.window import *
 from cenas import *
-from fisica import *
+from monster import *
+from shot import *
 import global_information
 janela = Window(1000, 800)
 

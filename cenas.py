@@ -2,7 +2,8 @@ from PPlay.sprite import *
 from PPlay.window import *
 from PPlay.mouse import *
 from PPlay.keyboard import *
-from fisica import *
+from monster import *
+from shot import *
 import global_information
 class Menu():
     def __init__(self, janela):
@@ -105,10 +106,15 @@ class Jogar():
         self.nave.x = janela.width/2 - self.nave.width/2
         self.nave.y = janela.height - self.nave.height - 10
         self.keyboard = Window.get_keyboard()
-        self.monstro = Monstro(janela)
+        self.monstro = Monstro(janela, self.nave)
+
+    def loss_life(self):
+        #will make play loss life
+        pass
+
     def select(self):
         self.nave.draw()
-        self.monstro.run(self.nave)
+        self.monstro.run()
         
         self.tempo += self.janela.delta_time()
         self.frame += 1
@@ -119,6 +125,7 @@ class Jogar():
         
         self.janela.draw_text(str(self.fps), 10, 10, 24, (255, 255, 255), "Arial")
         self.janela.draw_text(str(global_information.Pontos), self.janela.width/2, 10, 24, (0, 0, 255), "Arial")
+        self.janela.draw_text(str(global_information.Lifes), self.janela.width - 34, 10, 24, (255, 255, 0), "Arial")
         
         if global_information.CoolDown:
             if global_information.Tempo >= global_information.TimeCoolDown:
@@ -140,7 +147,10 @@ class Jogar():
 
         if self.keyboard.key_pressed("ESC"):
             global_information.Scene = 1
-        
+
+        if global_information.LossLife:
+            self.loss_life()
+
         if global_information.Win:
             global_information.Pontos = 0
             global_information.Scene = 1

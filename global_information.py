@@ -12,6 +12,9 @@ CoolDown = False
 TimeCoolDown = 0.5
 Tempo = 0
 
+Lifes = 3
+LossLife = False
+
 Win = False
 Loss = False
 

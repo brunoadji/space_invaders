@@ -97,22 +97,51 @@ class Ranking():
 
 class Jogar():
     def __init__(self, janela, tiro):
+        self.cooldownLife = 5
+        self.cooldownTime = 0
+        
+        self.cooldownShip = 0.2
+        self.cooldownShipTime = 0
+        
         self.fps = 0
         self.frame = 0
         self.tempo = 0
-        self.janela = janela
         self.nave = Sprite("imagens/nave.png")
-        self.tiro = tiro
         self.nave.x = janela.width/2 - self.nave.width/2
         self.nave.y = janela.height - self.nave.height - 10
+        self.janela = janela
+        self.tiro = tiro
         self.keyboard = Window.get_keyboard()
         self.monstro = Monstro(janela, self.nave)
 
+    def loss(self):
+        global_information.Pontos = 0
+        global_information.Scene = 1
+
     def loss_life(self):
-        #will make play loss life
-        pass
+        if self.cooldownTime == 0:
+            global_information.Lifes -= 1
+        if global_information.Lifes == 0:
+            return self.loss()
+        if self.cooldownTime >= self.cooldownLife:
+            self.cooldownTime = 0
+            global_information.LossLife = False
+            if not self.nave.drawable:
+                self.nave.unhide()
+        else:
+            self.cooldownTime += self.janela.delta_time()
+            if self.cooldownShipTime >= self.cooldownShip:
+                if self.nave.drawable:
+                    self.nave.hide()
+                    self.cooldownShipTime = 0
+                elif not self.nave.drawable:
+                    self.nave.unhide()
+                    self.cooldownShipTime = 0
+            else:
+                self.cooldownShipTime += self.janela.delta_time()
 
     def select(self):
+        print(global_information.LossLife)
         self.nave.draw()
         self.monstro.run()
         
@@ -137,6 +166,7 @@ class Jogar():
         if self.keyboard.key_pressed("SPACE") and not global_information.CoolDown:
             self.tiro.add_shot(self.nave)
             global_information.CoolDown = True
+
         if self.keyboard.key_pressed("D"):
             if self.nave.x < self.janela.width - self.nave.width:
                 self.nave.x += global_information.Speed_x * self.janela.delta_time()
@@ -156,7 +186,6 @@ class Jogar():
             global_information.Scene = 1
         
         if global_information.Loss:
-            global_information.Pontos = 0
-            global_information.Scene = 1
+            self.loss()
 
         self.tiro.update(self.monstro.monsters)

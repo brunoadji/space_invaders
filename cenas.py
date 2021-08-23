@@ -97,7 +97,7 @@ class Ranking():
 
 class Jogar():
     def __init__(self, janela, tiro):
-        self.cooldownLife = 5
+        self.cooldownLife = 2
         self.cooldownTime = 0
         
         self.cooldownShip = 0.2

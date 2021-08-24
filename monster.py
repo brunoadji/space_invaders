@@ -59,7 +59,7 @@ class Monstro():
 
     def update_shots(self):
         for shot in self.shots:
-            shot.y += 300 * self.janela.delta_time()
+            shot.y += 330 * self.janela.delta_time()
             if shot.y + shot.height >= self.ship.y:
                 if shot.x + shot.width > self.ship.x and self.ship.x + self.ship.width > shot.x and not global_information.LossLife:
                     self.ship.x = self.janela.width/2 - self.ship.width/2

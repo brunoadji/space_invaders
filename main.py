@@ -12,7 +12,7 @@ adicionar_tiro = Tiro(janela)
 jogo = Jogar(janela, adicionar_tiro)
 
 while True:
-    janela.set_background_color([0, 0, 0])
+    janela.set_background_color([100, 100, 100])
     if global_information.ChangeScene:
         global_information.ChangeScene = False
 

@@ -117,6 +117,10 @@ class Jogar():
     def loss(self):
         global_information.Pontos = 0
         global_information.Scene = 1
+        global_information.Lifes = 3
+        global_information.LossLife = False
+        if not self.nave.drawable:
+            self.nave.unhide()
 
     def loss_life(self):
         if self.cooldownTime == 0:
@@ -141,7 +145,6 @@ class Jogar():
                 self.cooldownShipTime += self.janela.delta_time()
 
     def select(self):
-        print(global_information.LossLife)
         self.nave.draw()
         self.monstro.run()
         

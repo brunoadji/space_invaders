@@ -1,4 +1,8 @@
 from PPlay.window import *
+from cenas.jogo import *
+from cenas.dificuldade import *
+from cenas.menu import *
+from cenas.ranking import *
 from cenas import *
 from monster import *
 from shot import *
@@ -11,20 +15,18 @@ ranking = Ranking(janela)
 adicionar_tiro = Tiro(janela)
 jogo = Jogar(janela, adicionar_tiro)
 
-while True:
+switcher = {
+    1: menu.run,
+    2: dificuldade.run,
+    3: ranking.run,
+    4: jogo.run
+}
+
+while global_information != 5:
     janela.set_background_color([100, 100, 100])
     if global_information.ChangeScene:
         global_information.ChangeScene = False
-
-    if global_information.Scene == 1:
-        menu.select()
-    if global_information.Scene == 2:
-        dificuldade.select()
-    if global_information.Scene == 3:
-        pass
-    if global_information.Scene == 4:
-        jogo.select()
-    if global_information.Scene == 5:
-        exit()
         
+    switcher[global_information.Scene]()
+    
     janela.update()

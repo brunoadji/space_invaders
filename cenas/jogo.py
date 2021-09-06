@@ -2,6 +2,7 @@ from PPlay.sprite import *
 from PPlay.window import *
 import global_information
 from monster import *
+from cenas.ranking import add
 
 class Jogar():
     def __init__(self, janela, tiro):
@@ -23,12 +24,19 @@ class Jogar():
         self.monstro = Monstro(janela, self.nave)
 
     def loss(self):
-        global_information.Pontos = 0
+        name = input()
+        self.monstro.reset()
+        add(global_information.Pontos, name)
+        global_information.reset()
         global_information.Scene = 1
-        global_information.Lifes = 3
-        global_information.LossLife = False
         if not self.nave.drawable:
             self.nave.unhide()
+            
+    def win(self):
+        global_information.Win = False
+        self.monstro.create_monsters()
+        self.monstro.chance *= 1.05
+        
 
     def loss_life(self):
         if self.cooldownTime == 0:
@@ -68,7 +76,7 @@ class Jogar():
         self.janela.draw_text(str(global_information.Lifes), self.janela.width - 34, 10, 24, (255, 255, 0), "Arial")
         
         if global_information.CoolDown:
-            if global_information.Tempo >= global_information.TimeCoolDown:
+            if global_information.Tempo >= global_information.TimeCoolDown[global_information.Difficulty]:
                 global_information.CoolDown = False
                 global_information.Tempo = 0
             else:
@@ -93,10 +101,9 @@ class Jogar():
             self.loss_life()
 
         if global_information.Win:
-            global_information.Pontos = 0
-            global_information.Scene = 1
+            self.win()
         
         if global_information.Loss:
             self.loss()
 
-        self.tiro.update(self.monstro.monsters)
+        self.tiro.update(self.monstro)

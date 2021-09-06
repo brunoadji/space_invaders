@@ -4,6 +4,7 @@ import random
 
 class Monstro():
     def __init__(self, janela, ship):
+        self.chance = 10
         self.time = 0
         self.cooldown = False
         self.timecooldown = 2
@@ -18,7 +19,7 @@ class Monstro():
         self.next_side = "right"
         self.create_monsters()
         self.down = False
-    
+
     def create_monsters(self):
         height = 10
         for i in range(self.row):
@@ -72,6 +73,21 @@ class Monstro():
         for shot in self.shots:
             shot.draw()
 
+    def reset(self):
+        self.chance = 10
+        self.time = 0
+        self.cooldown = False
+        self.timecooldown = 2
+        self.monsters = []
+        self.shots = []
+        self.row = 5
+        self.column = 7
+        self.speed_x = 100
+        self.countDown = 0
+        self.next_side = "right"
+        self.create_monsters()
+        self.down = False
+
     def run(self):
         if len(self.monsters) == 0:
             global_information.Win = True
@@ -94,7 +110,7 @@ class Monstro():
                 for m in self.monsters[i]:
                     if not self.cooldown:
                         #10% de chance de gerar o tiro
-                        if random.randint(0, 9) == 1:
+                        if random.randint(1, 100) <= self.chance:
                             self.cooldown = True
                             self.add_shot(m)
 

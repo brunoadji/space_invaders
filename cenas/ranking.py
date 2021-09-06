@@ -1,5 +1,16 @@
 from PPlay.sprite import *
+import global_information
 import sys
+
+def add(pontos, nome):
+    rank = open("ranking.txt", "r")
+    string = rank.read()
+    rank.close()
+    string += ";" + nome + "#" + str(pontos)
+    rank = open("ranking.txt", "w")
+    rank.write(string)
+    rank.close()
+    global_information.UpdateRank = True
 
 class Ranking():
     def __init__(self, janela):
@@ -8,16 +19,6 @@ class Ranking():
         self.backbutton.x = self.janela.width/2 - self.backbutton.width/2
         self.backbutton.y = 200
     
-    def add(self, pontos, nome):
-        rank = open("ranking.txt", "r")
-        string = rank.read()
-        rank.close()
-        string += ";" + nome + "#" + str(pontos)
-        rank = open("ranking.txt", "w")
-        rank.write(string)
-        rank.close()
-        self.update()
-
     def return_info(self):
         ranks = open("ranking.txt", "r")
         ranking = ranks.read()
@@ -63,6 +64,9 @@ class Ranking():
         rank.close()
     
     def run(self):
+        if global_information.UpdateRank:
+            self.update()
+            global_information.UpdateRank = False
         self.backbutton.draw()
         ranking = self.return_info()
         y_start = 300

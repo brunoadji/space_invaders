@@ -8,6 +8,7 @@ from monster import *
 from shot import *
 import global_information
 janela = Window(1000, 800)
+janela.set_title("Space Invaders")
 
 menu = Menu(janela)
 dificuldade = Dificuldade(janela)

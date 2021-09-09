@@ -7,7 +7,6 @@ class Tiro():
 
     def add_shot(self, nave):
         tiro = Sprite("imagens/tiro.jpg")
-        print(tiro.width)
         tiro.set_position(nave.x + nave.width/2, nave.y - tiro.height)
         self.tiros.append(tiro)
     

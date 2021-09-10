@@ -73,6 +73,7 @@ class Jogar():
             self.navenoshot.draw()
             self.cooldownEnergyTime += self.janela.delta_time()
             if self.cooldownEnergyTime >= self.cooldownEnergy:
+                self.cooldownEnergyTime = 0
                 self.cooldownEnergyTrue = False
         else:
             self.nave.draw()

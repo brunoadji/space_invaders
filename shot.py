@@ -2,10 +2,12 @@ from PPlay.sprite import *
 import global_information
 class Tiro():
     def __init__(self, janela):
+        self.quantity = 0
         self.janela = janela
         self.tiros = []
 
     def add_shot(self, nave):
+        self.quantity += 1
         tiro = Sprite("imagens/tiro.jpg")
         tiro.set_position(nave.x + nave.width/2, nave.y - tiro.height)
         self.tiros.append(tiro)

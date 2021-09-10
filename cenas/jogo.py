@@ -6,6 +6,9 @@ from cenas.ranking import add
 
 class Jogar():
     def __init__(self, janela, tiro):
+        self.cooldownEnergyTrue = False
+        self.cooldownEnergy = 3
+        self.cooldownEnergyTime = 0
         self.cooldownLife = 2
         self.cooldownTime = 0
         
@@ -15,6 +18,7 @@ class Jogar():
         self.fps = 0
         self.frame = 0
         self.tempo = 0
+        self.navenoshot = Sprite("imagens/nave_nova.png")
         self.nave = Sprite("imagens/nave.png")
         self.nave.x = janela.width/2 - self.nave.width/2
         self.nave.y = janela.height - self.nave.height - 10
@@ -61,7 +65,17 @@ class Jogar():
                 self.cooldownShipTime += self.janela.delta_time()
 
     def run(self):
-        self.nave.draw()
+        if self.keyboard.key_pressed("SPACE"):
+            self.janela.draw_text("espaço pressionado", 10, self.janela.height/2, 24, (255, 255, 255), "Arial")
+        self.navenoshot.x = self.nave.x
+        self.navenoshot.y = self.nave.y
+        if self.cooldownEnergyTrue:
+            self.navenoshot.draw()
+            self.cooldownEnergyTime += self.janela.delta_time()
+            if self.cooldownEnergyTime >= self.cooldownEnergy:
+                self.cooldownEnergyTrue = False
+        else:
+            self.nave.draw()
         self.monstro.run()
         
         self.tempo += self.janela.delta_time()
@@ -82,7 +96,7 @@ class Jogar():
             else:
                 global_information.Tempo += self.janela.delta_time()
         
-        if self.keyboard.key_pressed("SPACE") and not global_information.CoolDown:
+        if self.keyboard.key_pressed("SPACE") and not global_information.CoolDown and not self.cooldownEnergyTrue:
             self.tiro.add_shot(self.nave)
             global_information.CoolDown = True
 
@@ -105,5 +119,9 @@ class Jogar():
         
         if global_information.Loss:
             self.loss()
-
+        
+        if self.tiro.quantity == 10:
+            self.tiro.quantity = 0
+            self.cooldownEnergyTrue = True
+        
         self.tiro.update(self.monstro)
